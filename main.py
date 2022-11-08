@@ -25,6 +25,11 @@ G.print_sen()
 print("Vn: ", G.Vn)
 print("Vt: ", G.Vt)
 
+# 消除单一产生式
+print("-" * 10, 'start reduce single production', "-" * 10)
+G.reduce_single_production()
+G.print_sen()
+
 # 消除左递归
 print("-" * 10, 'start reduce left recursion', "-" * 10)
 G.reduce_left_recursion()
@@ -40,6 +45,11 @@ print("-" * 10, 'start reduce useless production', "-" * 10)
 G.reduce_useless_production()
 G.print_sen()
 
+# 简化产生式（消除重复产生式）
+print("-" * 10, 'start reduce repeat production', "-" * 10)
+G.reduce_repeat_production()
+G.print_sen()
+
 # 构成GNF
 gnf = GNF(G)
 gnf.simGra_to_GNF()
@@ -52,5 +62,5 @@ npda.form_ruler()
 
 # 下推
 # S => (a)i a (bb)i [i>=0]
-string = "aabb"
+string = "ba"
 NPDA_inference(npda, string)

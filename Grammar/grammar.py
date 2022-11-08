@@ -71,6 +71,24 @@ class Grammar:
                         self.Vt.append(i)
                 self.sen_list.append(segment)
 
+    def reduce_single_production(self):
+        sen_list = self.sen_list
+        del_segment = []
+        for seg in sen_list:
+            if len(seg.get_right())==1 and 'A'<= seg.get_right()[0] and seg.get_right()[0]<='Z':
+                right_list = []
+                del_segment.append(seg)
+                for s in sen_list:
+                    if s.get_left() == seg.get_right()[0]:
+                        right_list.append(s.get_right())
+                for r in right_list:
+                    new_g = seg.get_left() + '-' + r
+                    sen_list.append(sentence(new_g))
+            # 去除旧的生产式
+            for d in del_segment:
+                if d in sen_list:
+                    sen_list.remove(d)
+
     def reduce_indirect_left_recursion(self):
         '''
             1、 编号
@@ -96,15 +114,25 @@ class Grammar:
                     segment_right] < index_segment[segment.get_left()]:
                 for s in sen_list:
                     if segment_right == s.get_left():
-                        new_g = segment.get_left() + '-' + s.get_right(
-                        ) + segment.get_right()[1:]
+                        if s.get_right() == 'ε':
+                            if len(segment.get_right()) != 1:
+                                new_g = segment.get_left(
+                                ) + '-' + segment.get_right()[1:]
+                            else:
+                                new_g = segment.get_left(
+                                ) + '-' + 'ε'
+                        else:
+                            new_g = segment.get_left() + '-' + s.get_right(
+                            ) + segment.get_right()[1:]
+                        # print(new_g)
+                        print(s.get_left(),' -> ',new_g)
                         sen_list.append(sentence(new_g))
                 del_segment.append(segment)
-        # 去除旧的生产式
-        for d in del_segment:
-            if d in sen_list:
-                sen_list.remove(d)
-        self.sen_list = sen_list
+            # 去除旧的生产式
+            for d in del_segment:
+                if d in sen_list:
+                    sen_list.remove(d)
+            self.sen_list = sen_list
 
     def reduce_direct_left_recursion(self):
         '''
@@ -166,6 +194,8 @@ class Grammar:
     def reduce_left_recursion(self):
         # 消除间接左递归
         self.reduce_indirect_left_recursion()
+        self.print_sen()
+        print('-'*10 + ' ⬆indirect | ⬇direct ' + '-'*10)
         # 消除直接左递归
         self.reduce_direct_left_recursion()
 
@@ -224,3 +254,17 @@ class Grammar:
         for segment in sen_list:
             if segment.get_left() not in from_start_left_collection:
                 del_segment.append(segment)
+        for d in del_segment:
+            if d in sen_list:
+                sen_list.remove(d)
+    
+    def reduce_repeat_production(self):
+        res_sen_list = []
+        for segment in self.sen_list:
+            flag = False
+            for s in res_sen_list:
+                if segment.get_left()==s.get_left() and segment.get_right()==s.get_right():
+                    flag = True
+            if flag==False:
+                res_sen_list.append(segment)
+        self.sen_list = res_sen_list

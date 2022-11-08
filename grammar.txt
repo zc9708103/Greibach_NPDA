@@ -1,1 +1,3 @@
-S-aSbb|a
+S-AB
+A-ε|a
+B-A|b

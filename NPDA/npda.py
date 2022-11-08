@@ -1,4 +1,3 @@
-from matplotlib.cbook import Stack
 from Grammar.grammar import sentence
 import copy
 
